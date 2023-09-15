@@ -1,0 +1,4 @@
+immagine1.png | comando1 | Descrizione immagine 1 | Sezione1
+immagine2.png | comando2 | Descrizione immagine 2 | Sezione1
+immagine3.png | comando3 | Descrizione immagine 3 | Sezione2
+immagine4.png | comando4 | Descrizione immagine 4 | Sezione2
