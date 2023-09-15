@@ -12,7 +12,7 @@
 #define false 0
 
 const char *imageNames[NUM_IMAGES];
-const char *imageCommands[NUM_IMAGES];
+char *imageCommands[NUM_IMAGES];
 const char *imageSections[NUM_IMAGES];
 
 int fileExists(const char *filename) {
