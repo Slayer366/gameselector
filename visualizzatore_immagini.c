@@ -13,10 +13,7 @@
 
 const char *imageNames[NUM_IMAGES];
 const char *imageCommands[NUM_IMAGES];
-const char *imageDescriptions[NUM_IMAGES];
 const char *imageSections[NUM_IMAGES];
-
-int currentIndex = 0;
 
 int fileExists(const char *filename) {
     FILE *file = fopen(filename, "r");
@@ -37,7 +34,7 @@ int main(int argc, char *argv[]) {
 
     SDL_Texture *imageTextures[NUM_IMAGES];
 
-    // Leggi i comandi e le descrizioni da un file di testo
+    // Leggi i comandi da un file di testo
     FILE *commandsFile = fopen(COMMANDS_FILE, "r");
     if (!commandsFile) {
         printf("Impossibile aprire il file dei comandi: %s\n", COMMANDS_FILE);
@@ -50,17 +47,13 @@ int main(int argc, char *argv[]) {
             // Rimuovi spazi bianchi e caratteri di nuova riga
             strtok(line, "\r\n");
 
-            // Usa strtok per suddividere la riga nei quattro valori
+            // Usa strtok per suddividere la riga nei due valori
             char *imageName = strtok(line, "|");
             char *command = strtok(NULL, "|");
-            char *description = strtok(NULL, "|");
-            char *section = strtok(NULL, "|");
 
             // Assegna i valori alle variabili appropriate
             imageNames[i] = strdup(imageName);
             imageCommands[i] = strdup(command);
-            imageDescriptions[i] = strdup(description);
-            imageSections[i] = strdup(section);
         }
     }
 
@@ -79,6 +72,8 @@ int main(int argc, char *argv[]) {
     // Loop principale
     int quit = false;
     SDL_Event e;
+    int currentIndex = 0;
+
     while (!quit) {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
@@ -104,18 +99,9 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        // Pulisci lo schermo e disegna l'immagine corrente e la descrizione
+        // Pulisci lo schermo e disegna l'immagine corrente
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, imageTextures[currentIndex], NULL, NULL);
-
-        SDL_Color textColor = {255, 255, 255};
-        SDL_Surface *textSurface = TTF_RenderText_Solid(font, imageDescriptions[currentIndex], textColor);
-        SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-        SDL_Rect textRect = {10, 10, textSurface->w, textSurface->h};
-        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
-        SDL_FreeSurface(textSurface);
-        SDL_DestroyTexture(textTexture);
-
         SDL_RenderPresent(renderer);
     }
 
@@ -123,8 +109,6 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < NUM_IMAGES; i++) {
         SDL_DestroyTexture(imageTextures[i]);
         free(imageCommands[i]);
-        free(imageDescriptions[i]);
-        free(imageSections[i]);
     }
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
