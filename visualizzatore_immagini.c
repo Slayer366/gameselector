@@ -7,6 +7,10 @@
 #define COMMANDS_FILE "comandi.txt"
 #define IMAGE_DIR "images/"
 
+#define bool int
+#define true 1
+#define false 0
+
 const char *imageNames[NUM_IMAGES];
 const char *imageCommands[NUM_IMAGES];
 const char *imageDescriptions[NUM_IMAGES];
@@ -14,7 +18,7 @@ const char *imageSections[NUM_IMAGES];
 
 int currentIndex = 0;
 
-bool fileExists(const char *filename) {
+int fileExists(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (file) {
         fclose(file);
@@ -73,7 +77,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Loop principale
-    bool quit = false;
+    int quit = false;
     SDL_Event e;
     while (!quit) {
         while (SDL_PollEvent(&e)) {
