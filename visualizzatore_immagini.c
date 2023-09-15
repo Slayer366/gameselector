@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define NUM_IMAGES 4
+#define NUM_IMAGES 7
 #define COMMANDS_FILE "comandi.txt"
 #define IMAGE_DIR "images/"
 
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
     IMG_Init(IMG_INIT_PNG); // Inizializza SDL_image per il supporto PNG
 
     // Inizializza la finestra SDL
-    SDL_Window *window = SDL_CreateWindow("Visualizzatore di Immagini SDL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+    SDL_Window *window = SDL_CreateWindow("Visualizzatore di Immagini SDL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_SHOWN);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     SDL_Texture *imageTextures[NUM_IMAGES];
