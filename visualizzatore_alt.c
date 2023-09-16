@@ -10,9 +10,9 @@
 #define true 1
 #define false 0
 
-const char *imageNames[NUM_IMAGES];
-char *imageCommands[NUM_IMAGES];
-const char *imageSections[NUM_IMAGES];
+const char **imageNames;
+char **imageCommands;
+const char **imageSections;
 
 int fileExists(const char *filename) {
     FILE *file = fopen(filename, "r");
@@ -31,23 +31,16 @@ int main(int argc, char *argv[]) {
     SDL_Window *window = SDL_CreateWindow("Visualizzatore di Immagini SDL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_SHOWN);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    SDL_Texture *imageTextures[NUM_IMAGES];
-
-    // Leggi i comandi da un file di testo
-    FILE *commandsFile = fopen(COMMANDS_FILE, "r");
-    if (!commandsFile) {
-        printf("Impossibile aprire il file dei comandi: %s\n", COMMANDS_FILE);
-        return 1;
-    }
-
-    int numImages = 0; // Numero di immagini lette da "controlli.txt"
-
+    SDL_Texture **imageTextures;
+    
     // Leggi il numero di immagini da "controlli.txt"
     FILE *controlsFile = fopen(CONTROLS_FILE, "r");
     if (!controlsFile) {
         printf("Impossibile aprire il file dei controlli: %s\n", CONTROLS_FILE);
         return 1;
     }
+
+    int numImages = 0; // Numero di immagini lette da "controlli.txt"
 
     if (fscanf(controlsFile, "%d", &numImages) != 1) {
         printf("Errore nella lettura del numero di immagini dal file dei controlli.\n");
@@ -57,7 +50,18 @@ int main(int argc, char *argv[]) {
 
     fclose(controlsFile);
 
+    imageNames = (const char **)malloc(numImages * sizeof(const char *));
+    imageCommands = (char **)malloc(numImages * sizeof(char *));
+    imageSections = (const char **)malloc(numImages * sizeof(const char *));
+    imageTextures = (SDL_Texture **)malloc(numImages * sizeof(SDL_Texture *));
+
     // Leggi le informazioni delle immagini da "controlli.txt"
+    FILE *commandsFile = fopen(CONTROLS_FILE, "r");
+    if (!commandsFile) {
+        printf("Impossibile aprire il file dei comandi: %s\n", CONTROLS_FILE);
+        return 1;
+    }
+
     for (int i = 0; i < numImages; i++) {
         char line[256];
         if (fgets(line, sizeof(line), commandsFile) != NULL) {
@@ -141,9 +145,15 @@ int main(int argc, char *argv[]) {
 
     // Libera le risorse
     for (int i = 0; i < numImages; i++) {
-        SDL_DestroyTexture(imageTextures[i]);
+        free(imageNames[i]);
         free(imageCommands[i]);
+        SDL_DestroyTexture(imageTextures[i]);
     }
+    free(imageNames);
+    free(imageCommands);
+    free(imageSections);
+    free(imageTextures);
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     IMG_Quit(); // Chiudi SDL_image
