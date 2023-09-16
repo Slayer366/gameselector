@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     SDL_Texture **imageTextures;
-    
+
     // Leggi il numero di immagini da "controlli.txt"
     FILE *controlsFile = fopen(CONTROLS_FILE, "r");
     if (!controlsFile) {
@@ -145,10 +145,11 @@ int main(int argc, char *argv[]) {
 
     // Libera le risorse
     for (int i = 0; i < numImages; i++) {
-        free(imageNames[i]);
+        free((char *)imageNames[i]); // Rimuovi la costante
         free(imageCommands[i]);
         SDL_DestroyTexture(imageTextures[i]);
     }
+
     free(imageNames);
     free(imageCommands);
     free(imageSections);
