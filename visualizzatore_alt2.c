@@ -4,65 +4,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ctype.h> // Aggiunto per isspace()
 
 #define COMMANDS_FILE "controlli.txt"
 #define IMAGE_DIR "images/"
 
-// Definizione della funzione per eseguire la gif e il comando
-void executeGifAndCommand(const char *gifName, const char *command) {
-    // Comando per eseguire la gif e il comando specificati
-    char commandBuffer[512];
-    snprintf(commandBuffer, sizeof(commandBuffer), "start %s && %s", gifName, command);
-    system(commandBuffer);
-}
-
-// Funzione per rimuovere gli spazi in eccesso da una stringa
-void trimWhitespace(char *str) {
-    char *end;
-
-    // Rimuovi gli spazi iniziali
-    while (isspace((unsigned char)*str)) {
-        str++;
-    }
-
-    // Se la stringa è diventata tutta spazi, restituisci una stringa vuota
-    if (*str == '\0') {
-        return;
-    }
-
-    // Trova l'ultimo carattere non spazio
-    end = str + strlen(str) - 1;
-    while (end > str && isspace((unsigned char)*end)) {
-        end--;
-    }
-
-    // Aggiungi il terminatore di stringa dopo l'ultimo carattere non spazio
-    *(end + 1) = '\0';
-}
-
-// Funzione per leggere il nome dell'immagine PNG, la gif e il comando da controlli.txt
-bool readImageGifAndCommandFromControlliTxt(const char *filename, char *imageName, char *gifName, char *command) {
-    FILE *file = fopen(filename, "r");
-    if (!file) {
-        return false;
-    }
-
-    while (fscanf(file, "%255[^|] | %255[^|] | %255[^\n]", imageName, gifName, command) == 3) {
-        // Rimuovi gli spazi in eccesso
-        trimWhitespace(imageName);
-        trimWhitespace(gifName);
-        trimWhitespace(command);
-
-        // Restituisci il primo match valido trovato nel file
-        fclose(file);
-        return true;
-    }
-
-    fclose(file);
-    return false;
-}
+// Prototipi delle funzioni
+int countOptions(const char *filename);
+bool readImageGifAndCommandFromControlliTxt(const char *filename, char *imageName, char *gifName, char *command);
+void trimWhitespace(char *str);
+void executeGifAndCommand(const char *gifName, const char *command);
 
 int main(int argc, char *argv[]) {
+    // Dichiarazione della variabile "running" e inizializzazione a true
+    bool running = true;
+
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
 
@@ -84,7 +40,6 @@ int main(int argc, char *argv[]) {
     Uint32 startTime = SDL_GetTicks();
     bool gifActivated = false;
 
-    // Nel ciclo principale di rendering:
     while (running) {
         // ...
 
@@ -136,4 +91,76 @@ int main(int argc, char *argv[]) {
     SDL_Quit();
 
     return 0;
+}
+
+// Funzione per contare le opzioni nel file dei comandi
+int countOptions(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        return 0;
+    }
+
+    int count = 0;
+    char line[256];
+
+    while (fgets(line, sizeof(line), file) != NULL) {
+        count++;
+    }
+
+    fclose(file);
+    return count;
+}
+
+// Funzione per leggere il nome dell'immagine PNG, la gif e il comando da controlli.txt
+bool readImageGifAndCommandFromControlliTxt(const char *filename, char *imageName, char *gifName, char *command) {
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        return false;
+    }
+
+    while (fscanf(file, "%255[^|] | %255[^|] | %255[^\n]", imageName, gifName, command) == 3) {
+        // Rimuovi gli spazi in eccesso
+        trimWhitespace(imageName);
+        trimWhitespace(gifName);
+        trimWhitespace(command);
+
+        // Restituisci il primo match valido trovato nel file
+        fclose(file);
+        return true;
+    }
+
+    fclose(file);
+    return false;
+}
+
+// Funzione per rimuovere gli spazi in eccesso da una stringa
+void trimWhitespace(char *str) {
+    char *end;
+
+    // Rimuovi gli spazi iniziali
+    while (isspace((unsigned char)*str)) {
+        str++;
+    }
+
+    // Se la stringa è diventata tutta spazi, restituisci una stringa vuota
+    if (*str == '\0') {
+        return;
+    }
+
+    // Trova l'ultimo carattere non spazio
+    end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char)*end)) {
+        end--;
+    }
+
+    // Aggiungi il terminatore di stringa dopo l'ultimo carattere non spazio
+    *(end + 1) = '\0';
+}
+
+// Funzione per eseguire la gif e il comando
+void executeGifAndCommand(const char *gifName, const char *command) {
+    // Comando per eseguire la gif e il comando specificati
+    char commandBuffer[512];
+    snprintf(commandBuffer, sizeof(commandBuffer), "start %s && %s", gifName, command);
+    system(commandBuffer);
 }
