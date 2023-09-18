@@ -4,14 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <ctype.h> // Aggiunto per isspace()
+#include <ctype.h>
 
-#define COMMANDS_FILE "controlli.txt"
+#define COMMANDS_FILE "comandi.txt"
 #define IMAGE_DIR "images/"
 
 // Prototipi delle funzioni
 int countOptions(const char *filename);
-bool readImageGifAndCommandFromControlliTxt(const char *filename, char *imageName, char *gifName, char *command);
+bool readImageGifAndCommandFromComandiTxt(const char *filename, char *imageName, char *gifName, char *command);
 void trimWhitespace(char *str);
 void executeGifAndCommand(const char *gifName, const char *command);
 
@@ -47,11 +47,11 @@ int main(int argc, char *argv[]) {
         Uint32 elapsedTime = currentTime - startTime;
 
         if (elapsedTime >= 3000 && !gifActivated) {
-            // Esegui la gif e il comando associato dal file controlli.txt.
+            // Esegui la gif e il comando associato dal file comandi.txt.
             gifActivated = true;
 
-            // Leggi il nome dell'immagine PNG, il nome della gif e il comando dal file controlli.txt.
-            if (readImageGifAndCommandFromControlliTxt(COMMANDS_FILE, imageName, gifName, command)) {
+            // Leggi il nome dell'immagine PNG, il nome della gif e il comando dal file comandi.txt.
+            if (readImageGifAndCommandFromComandiTxt(COMMANDS_FILE, imageName, gifName, command)) {
                 // Carica e visualizza l'immagine PNG da IMAGE_DIR
                 char imagePath[512];
                 snprintf(imagePath, sizeof(imagePath), "%s%s", IMAGE_DIR, imageName);
@@ -111,8 +111,8 @@ int countOptions(const char *filename) {
     return count;
 }
 
-// Funzione per leggere il nome dell'immagine PNG, la gif e il comando da controlli.txt
-bool readImageGifAndCommandFromControlliTxt(const char *filename, char *imageName, char *gifName, char *command) {
+// Funzione per leggere il nome dell'immagine PNG, la gif e il comando da comandi.txt
+bool readImageGifAndCommandFromComandiTxt(const char *filename, char *imageName, char *gifName, char *command) {
     FILE *file = fopen(filename, "r");
     if (!file) {
         return false;
