@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define NUM_IMAGES 7
+#define NUM_IMAGES 8
 #define COMMANDS_FILE "comandi.txt"
 #define IMAGE_DIR "images/"
 
