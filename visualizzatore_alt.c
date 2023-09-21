@@ -53,6 +53,15 @@ int main(int argc, char *argv[]) {
 
     const char *imageNames[NUM_IMAGES];
     char *imageCommands[NUM_IMAGES];
+    SDL_Texture *imageTextures[NUM_IMAGES]; // Dichiarazione dell'array imageTextures
+
+    // ...
+
+    // Inizializza le texture nell'array imageTextures
+    for (int i = 0; i < NUM_IMAGES; i++) {
+        // Codice per creare la texture da imageNames[i] e caricare l'immagine da file
+        // imageTextures[i] = SDL_CreateTextureFromSurface(renderer, surface); // Esempio
+    }
 
     // ...
 
