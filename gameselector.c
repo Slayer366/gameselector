@@ -172,6 +172,7 @@ int main() {
                     }
                 }
             }
+        }
 
         // Render current image
         SDL_RenderClear(renderer);
@@ -194,6 +195,7 @@ int main() {
     if (controller) {
         SDL_GameControllerClose(controller);
     }
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     IMG_Quit();
