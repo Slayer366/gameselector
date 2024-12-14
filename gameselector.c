@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <string.h>
 
 #define CONFIG_FILE "gameselector.conf"
@@ -165,10 +165,7 @@ int main() {
     free(imageNames);
     free(imageCommands);
 
-    if (joystick) {
-        SDL_JoystickClose(joystick);
-    }
-
+    SDL_JoystickClose(joystick);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     IMG_Quit();
