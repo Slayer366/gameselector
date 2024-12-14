@@ -107,9 +107,10 @@ int main() {
 
     // Main loop
     while (!quit) {
-        while (SDL_PollEvent(&e)) {
+        while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
                 quit = true;
+                return 1;
             }
 
             // Keyboard events
@@ -135,50 +136,42 @@ int main() {
                         break;
                     case SDLK_ESCAPE:
                         quit = true;
+                        return 1;
                         break;
                 }
             }
 
             // Game controller events
             if (controller) {
-                // D-Pad navigation
-                if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_UP) ||
-                    SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_LEFT)) {
-                    currentIndex = (currentIndex - 1 + numImages) % numImages;
-                }
-
-                if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_DOWN) ||
-                    SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_RIGHT)) {
-                    currentIndex = (currentIndex + 1) % numImages;
-                }
-
-                if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_A) ||
-                    SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_B)) {
-                    if (fileExists(imageCommands[currentIndex])) {
-                        int ret = system(imageCommands[currentIndex]);
-                        if (ret == -1) {
-                            printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
-                        }
-                    } else {
-                        printf("The config file does not exist.\n");
+                if (e.type == SDL_CONTROLLERBUTTONDOWN) {
+                    switch (e.cbutton.button) {
+                        case SDL_CONTROLLER_BUTTON_DPAD_UP:
+                        case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+                            currentIndex = (currentIndex - 1 + numImages) % numImages;
+                            break;
+                        case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+                        case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+                            currentIndex = (currentIndex + 1) % numImages;
+                            break;
+                        case SDL_CONTROLLER_BUTTON_A:
+                        case SDL_CONTROLLER_BUTTON_B:
+                        case SDL_CONTROLLER_BUTTON_START:
+                            if (fileExists(imageCommands[currentIndex])) {
+                                int ret = system(imageCommands[currentIndex]);
+                                if (ret == -1) {
+                                    printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
+                                }
+                            } else {
+                                printf("The config file does not exist.\n");
+                            }
+                            break;
+                        case SDL_CONTROLLER_BUTTON_BACK:
+                            quit = true;
+                            return 1;
+                            break;
                     }
-                }
-
-                if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_START)) {
-                    // 'Start' activates the selected item
-                    if (fileExists(imageCommands[currentIndex])) {
-                        int ret = system(imageCommands[currentIndex]);
-                        if (ret == -1) {
-                            printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
-                        }
-                    }
-                }
-
-                if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_BACK)) {
-                    quit = true;
                 }
             }
-        }
 
         // Render current image
         SDL_RenderClear(renderer);
