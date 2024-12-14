@@ -22,7 +22,7 @@ int fileExists(const char *filename) {
 }
 
 int main() {
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
     IMG_Init(IMG_INIT_PNG);
 
     SDL_Window *window = SDL_CreateWindow("SDL Image Viewer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_SHOWN);
@@ -94,14 +94,14 @@ int main() {
     SDL_Event e;
     int currentIndex = 0;
 
-    // Initialize joystick
-    SDL_Joystick *joystick = NULL;
-    if (SDL_NumJoysticks() > 0) {
-        joystick = SDL_JoystickOpen(0);
-        if (joystick) {
-            printf("Joystick connected: %s\n", SDL_JoystickName(joystick));
+    // Initialize game controller
+    SDL_GameController *controller = NULL;
+    if (SDL_NumJoysticks() > 0 && SDL_IsGameController(0)) {
+        controller = SDL_GameControllerOpen(0);
+        if (controller) {
+            printf("Game controller connected: %s\n", SDL_GameControllerName(controller));
         } else {
-            printf("Failed to open joystick.\n");
+            printf("Failed to open game controller.\n");
         }
     }
 
@@ -111,6 +111,7 @@ int main() {
             if (e.type == SDL_QUIT) {
                 quit = true;
             }
+
             // Keyboard events
             if (e.type == SDL_KEYDOWN) {
                 switch (e.key.keysym.sym) {
@@ -132,33 +133,55 @@ int main() {
                             printf("The config file does not exist.\n");
                         }
                         break;
-                }
-            }
-
-            // Joystick events
-            if (e.type == SDL_JOYHATMOTION) {
-                switch (e.jhat.value) {
-                    case SDL_HAT_LEFT:
-                    case SDL_HAT_UP:
-                        currentIndex = (currentIndex - 1 + numImages) % numImages;
-                        break;
-                    case SDL_HAT_RIGHT:
-                    case SDL_HAT_DOWN:
-                        currentIndex = (currentIndex + 1) % numImages;
+                    case SDLK_ESCAPE:
+                        quit = true;
                         break;
                 }
             }
 
-            if (e.type == SDL_JOYBUTTONDOWN) {
-                if (e.jbutton.button == 0 || e.jbutton.button == 7) {  // "A" button or "Start"
-                        if (fileExists(imageCommands[currentIndex])) {
-                            int ret = system(imageCommands[currentIndex]);
-                            if (ret == -1) {
-                                printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
-                            }
-                        } else {
-                            printf("The config file does not exist.\n");
+            // Game controller events
+            if (controller) {
+                // D-Pad navigation
+                if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_UP) ||
+                    SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_LEFT)) {
+                    currentIndex = (currentIndex - 1 + numImages) % numImages;
+                }
+
+                if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_DOWN) ||
+                    SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_RIGHT)) {
+                    currentIndex = (currentIndex + 1) % numImages;
+                }
+
+                if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_A) ||
+                    SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_B)) {
+                    if (fileExists(imageCommands[currentIndex])) {
+                        int ret = system(imageCommands[currentIndex]);
+                        if (ret == -1) {
+                            printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
                         }
+                    } else {
+                        printf("The config file does not exist.\n");
+                    }
+                }
+
+                if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_B)) {
+                    // Handle "B" button action if needed
+                    printf("B button pressed.\n");
+                }
+
+                if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_START)) {
+                    // 'Start' activates the selected item
+                    if (fileExists(imageCommands[currentIndex])) {
+                        int ret = system(imageCommands[currentIndex]);
+                        if (ret == -1) {
+                            printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
+                        }
+                    }
+                }
+
+                if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_SELECT)) {
+                    // 'Select' can be used for another action
+                    printf("Select button pressed.\n");
                 }
             }
         }
@@ -181,7 +204,9 @@ int main() {
     free(imageNames);
     free(imageCommands);
 
-    SDL_JoystickClose(joystick);
+    if (controller) {
+        SDL_GameControllerClose(controller);
+    }
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     IMG_Quit();
