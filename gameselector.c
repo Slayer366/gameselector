@@ -42,6 +42,9 @@ int main() {
         return 1;
     }
 
+    // Skip the rest of the first line in the config file (newline after the number)
+    fgetc(configFile);
+
     const char **imageNames = (const char **)malloc(numImages * sizeof(const char *));
     char **imageCommands = (char **)malloc(numImages * sizeof(char *));
 
@@ -55,11 +58,17 @@ int main() {
     for (int i = 0; i < numImages; i++) {
         char line[256];
         if (fgets(line, sizeof(line), configFile) != NULL) {
-            strtok(line, "\r\n");
+            strtok(line, "\r\n"); // Remove any trailing newline or carriage return
             char *imageName = strtok(line, "|");
             char *command = strtok(NULL, "|");
-            imageNames[i] = strdup(imageName);
-            imageCommands[i] = strdup(command);
+            if (imageName && command) {
+                imageNames[i] = strdup(imageName);
+                imageCommands[i] = strdup(command);
+            } else {
+                printf("Error: Malformed line in config file: '%s'\n", line);
+                fclose(configFile);
+                return 1;
+            }
         }
     }
 
@@ -72,8 +81,13 @@ int main() {
         char imagePath[256];
         snprintf(imagePath, sizeof(imagePath), "%s%s", IMAGE_DIR, imageNames[i]);
         SDL_Surface *imageSurface = IMG_Load(imagePath);
-        imageTextures[i] = SDL_CreateTextureFromSurface(renderer, imageSurface);
-        SDL_FreeSurface(imageSurface);
+        if (imageSurface) {
+            imageTextures[i] = SDL_CreateTextureFromSurface(renderer, imageSurface);
+            SDL_FreeSurface(imageSurface);
+        } else {
+            printf("Error loading image: %s\n", imagePath);
+            imageTextures[i] = NULL;  // Assign NULL in case of an error
+        }
     }
 
     int quit = false;
@@ -151,7 +165,9 @@ int main() {
 
         // Render current image
         SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, imageTextures[currentIndex], NULL, NULL);
+        if (imageTextures[currentIndex]) {
+            SDL_RenderCopy(renderer, imageTextures[currentIndex], NULL, NULL);
+        }
         SDL_RenderPresent(renderer);
     }
 
