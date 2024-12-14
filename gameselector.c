@@ -110,7 +110,10 @@ int main() {
                         break;
                     case SDLK_RETURN:
                         if (fileExists(imageCommands[currentIndex])) {
-                            system(imageCommands[currentIndex]);
+                            int ret = system(imageCommands[currentIndex]);
+                            if (ret == -1) {
+                                printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
+                            }
                         } else {
                             printf("The config file does not exist.\n");
                         }
@@ -134,11 +137,14 @@ int main() {
 
             if (e.type == SDL_JOYBUTTONDOWN) {
                 if (e.jbutton.button == 0 || e.jbutton.button == 7) {  // "A" button or "Start"
-                    if (fileExists(imageCommands[currentIndex])) {
-                        system(imageCommands[currentIndex]);
-                    } else {
-                        printf("The config file does not exist.\n");
-                    }
+                        if (fileExists(imageCommands[currentIndex])) {
+                            int ret = system(imageCommands[currentIndex]);
+                            if (ret == -1) {
+                                printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
+                            }
+                        } else {
+                            printf("The config file does not exist.\n");
+                        }
                 }
             }
         }
