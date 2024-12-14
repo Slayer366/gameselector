@@ -131,7 +131,7 @@ int main() {
                                 printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
                             }
                         } else {
-                            printf("The config file does not exist.\n");
+                            printf("The command or file does not exist.\n");
                         }
                         break;
                     case SDLK_ESCAPE:
@@ -162,10 +162,11 @@ int main() {
                                     printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
                                 }
                             } else {
-                                printf("The config file does not exist.\n");
+                                printf("The command or file does not exist.\n");
                             }
                             break;
                         case SDL_CONTROLLER_BUTTON_BACK:
+                        case SDL_CONTROLLER_BUTTON_GUIDE:
                             quit = true;
                             return 1;
                             break;
