@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 `sdl2-config --cflags`
+CFLAGS = -g -Wall -Wextra -O2 `sdl2-config --cflags`
 LDFLAGS = `sdl2-config --libs` -lSDL2_image
 
 # Source and target
