@@ -164,11 +164,6 @@ int main() {
                     }
                 }
 
-                if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_B)) {
-                    // Handle "B" button action if needed
-                    printf("B button pressed.\n");
-                }
-
                 if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_START)) {
                     // 'Start' activates the selected item
                     if (fileExists(imageCommands[currentIndex])) {
@@ -179,9 +174,8 @@ int main() {
                     }
                 }
 
-                if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_SELECT)) {
-                    // 'Select' can be used for another action
-                    printf("Select button pressed.\n");
+                if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_BACK)) {
+                    quit = true;
                 }
             }
         }
