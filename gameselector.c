@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
-//#include <stdlib.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define CONFIG_FILE "gameselector.conf"
@@ -58,27 +58,8 @@ int main() {
             strtok(line, "\r\n");
             char *imageName = strtok(line, "|");
             char *command = strtok(NULL, "|");
-
-            if (imageName == NULL || command == NULL) {
-                printf("Error: Malformed line in config file: '%s'\n", line);
-                fclose(configFile);
-                return 1;
-            }
-            
             imageNames[i] = strdup(imageName);
-            if (imageNames[i] == NULL) {
-                printf("Error allocating memory for imageName.\n");
-                fclose(configFile);
-                return 1;
-            }
-            
             imageCommands[i] = strdup(command);
-            if (imageCommands[i] == NULL) {
-                printf("Error allocating memory for imageCommand.\n");
-                fclose(configFile);
-                return 1;
-            }
-
         }
     }
 
