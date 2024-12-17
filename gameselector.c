@@ -126,10 +126,15 @@ int main() {
                         break;
                     case SDLK_RETURN:
                         if (fileExists(imageCommands[currentIndex])) {
+                            SDL_DestroyRenderer(renderer);
+                            SDL_DestroyWindow(window);
+                            IMG_Quit();
+                            SDL_Quit();
                             int ret = system(imageCommands[currentIndex]);
                             if (ret == -1) {
                                 printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
                             }
+                            exit(0);
                         } else {
                             printf("The command or file does not exist.\n");
                         }
@@ -157,10 +162,15 @@ int main() {
                         case SDL_CONTROLLER_BUTTON_B:
                         case SDL_CONTROLLER_BUTTON_START:
                             if (fileExists(imageCommands[currentIndex])) {
+                                SDL_DestroyRenderer(renderer);
+                                SDL_DestroyWindow(window);
+                                IMG_Quit();
+                                SDL_Quit();
                                 int ret = system(imageCommands[currentIndex]);
                                 if (ret == -1) {
                                     printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
                                 }
+                                exit(0);
                             } else {
                                 printf("The command or file does not exist.\n");
                             }
@@ -181,6 +191,7 @@ int main() {
             SDL_RenderCopy(renderer, imageTextures[currentIndex], NULL, NULL);
         }
         SDL_RenderPresent(renderer);
+        SDL_Delay(16);
     }
 
     // Free resources
