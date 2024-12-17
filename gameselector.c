@@ -27,6 +27,9 @@ int main() {
 
     SDL_Window *window = SDL_CreateWindow("SDL Image Viewer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_SHOWN);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_RenderSetLogicalSize(renderer, 640, 480);
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+    SDL_RenderSetIntegerScale(renderer, SDL_FALSE);
 
     // Open the config file
     FILE *configFile = fopen(CONFIG_FILE, "r");
