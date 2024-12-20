@@ -11,6 +11,53 @@
 #define true 1
 #define false 0
 
+bool quit = false;
+
+// Function to handle SDL2 events
+int handleEvents() {
+    SDL_Event e;
+    while (SDL_PollEvent(&e) != 0) {
+        if (e.type == SDL_QUIT) {
+            quit = true;
+            return 1;
+        } else if (e.type == SDL_KEYDOWN) {
+            switch (e.key.keysym.sym) {
+                case SDLK_UP:
+                    return SDLK_UP;
+                case SDLK_DOWN:
+                    return SDLK_DOWN;
+                case SDLK_LEFT:
+                    return SDLK_LEFT;
+                case SDLK_RIGHT:
+                    return SDLK_RIGHT;
+                case SDLK_RETURN:
+                    return SDLK_RETURN;
+                case SDLK_ESCAPE:
+                    return SDLK_ESCAPE;
+            }
+        } else if (e.type == SDL_CONTROLLERBUTTONDOWN) {
+            switch (e.cbutton.button) {
+                case SDL_CONTROLLER_BUTTON_DPAD_UP:
+                    return SDLK_UP;
+                case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+                    return SDLK_DOWN;
+                case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+                    return SDLK_LEFT;
+                case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+                    return SDLK_RIGHT;
+                case SDL_CONTROLLER_BUTTON_A:
+                case SDL_CONTROLLER_BUTTON_B:
+                case SDL_CONTROLLER_BUTTON_START:
+                    return SDLK_RETURN;
+                case SDL_CONTROLLER_BUTTON_BACK:
+                    return SDLK_ESCAPE;
+            }
+        }
+    }
+    return 0;
+}
+
+
 // Check if file exists
 int fileExists(const char *filename) {
     FILE *file = fopen(filename, "r");
@@ -21,6 +68,8 @@ int fileExists(const char *filename) {
     return false;
 }
 
+
+// The main program loop
 int main() {
 
     const char *xdgDataHome = getenv("XDG_DATA_HOME");
@@ -367,7 +416,7 @@ int main() {
 
 
     // Initialize SDL
-    if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_NOPARACHUTE) != 0)
+    if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) != 0)
     {
       fprintf(stderr, "Failed to initialize SDL: %s\n", SDL_GetError());
       SDL_Quit();
@@ -376,6 +425,7 @@ int main() {
 
     IMG_Init(IMG_INIT_PNG);
 
+    // Create a window and renderer
     SDL_Window *window = SDL_CreateWindow("Game Selector", 
                                           SDL_WINDOWPOS_CENTERED, 
                                           SDL_WINDOWPOS_CENTERED, 
@@ -461,8 +511,6 @@ int main() {
         }
     }
 
-    int quit = false;
-    SDL_Event e;
     int currentIndex = 0;
 
     // Initialize game controller
@@ -476,85 +524,43 @@ int main() {
         }
     }
 
-    // Main loop
     while (!quit) {
-        while (SDL_PollEvent(&e) != 0) {
-            if (e.type == SDL_QUIT) {
-                quit = true;
-                return 1;
-            }
+        int event = handleEvents();
 
-            // Keyboard events
-            if (e.type == SDL_KEYDOWN) {
-                switch (e.key.keysym.sym) {
-                    case SDLK_LEFT:
-                    case SDLK_UP:
-                        currentIndex = (currentIndex - 1 + numImages) % numImages;
-                        break;
-                    case SDLK_RIGHT:
-                    case SDLK_DOWN:
-                        currentIndex = (currentIndex + 1) % numImages;
-                        break;
-                    case SDLK_RETURN:
-                        if (fileExists(imageCommands[currentIndex])) {
-                            SDL_DestroyRenderer(renderer);
-                            SDL_DestroyWindow(window);
-                            IMG_Quit();
-                            SDL_Quit();
-                            int ret = system(imageCommands[currentIndex]);
-                            if (ret == -1) {
-                                printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
-                            }
-                            exit(0);
-                        } else {
-                            printf("The command or file does not exist.\n");
-                        }
-                        break;
-                    case SDLK_ESCAPE:
-                        quit = true;
-                        return 1;
-                        break;
+        if (event == SDLK_RETURN) {
+            if (fileExists(imageCommands[currentIndex])) {
+                SDL_DestroyRenderer(renderer);
+                SDL_DestroyWindow(window);
+                IMG_Quit();
+                SDL_Quit();
+                int ret = system(imageCommands[currentIndex]);
+                if (ret == -1) {
+                    printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
                 }
+                exit(0);
+            } else {
+                printf("The command or file does not exist.\n");
             }
-
-            // Game controller events
-            if (controller) {
-                if (e.type == SDL_CONTROLLERBUTTONDOWN) {
-                    switch (e.cbutton.button) {
-                        case SDL_CONTROLLER_BUTTON_DPAD_UP:
-                        case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-                            currentIndex = (currentIndex - 1 + numImages) % numImages;
-                            break;
-                        case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-                        case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-                            currentIndex = (currentIndex + 1) % numImages;
-                            break;
-                        case SDL_CONTROLLER_BUTTON_A:
-                        case SDL_CONTROLLER_BUTTON_B:
-                        case SDL_CONTROLLER_BUTTON_START:
-                            if (fileExists(imageCommands[currentIndex])) {
-                                SDL_DestroyRenderer(renderer);
-                                SDL_DestroyWindow(window);
-                                IMG_Quit();
-                                SDL_Quit();
-                                int ret = system(imageCommands[currentIndex]);
-                                if (ret == -1) {
-                                    printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
-                                }
-                                exit(0);
-                            } else {
-                                printf("The command or file does not exist.\n");
-                            }
-                            break;
-                        case SDL_CONTROLLER_BUTTON_BACK:
-                        case SDL_CONTROLLER_BUTTON_GUIDE:
-                            quit = true;
-                            return 1;
-                            break;
-                    }
-                }
-            }
+            break;
         }
+
+        switch (event) {
+            case SDLK_UP:
+            case SDLK_LEFT:
+                currentIndex = (currentIndex - 1 + numImages) % numImages;
+                break;
+            case SDLK_DOWN:
+            case SDLK_RIGHT:
+                currentIndex = (currentIndex + 1) % numImages;
+                break;
+            case SDLK_ESCAPE:
+                quit = true;
+                SDL_Quit();
+                exit(0);
+                return 1;
+                break;
+        }
+
 
         // Render current image
         SDL_RenderClear(renderer);
