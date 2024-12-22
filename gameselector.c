@@ -21,36 +21,36 @@ int handleEvents() {
             quit = true;
             return 1;
         } else if (e.type == SDL_KEYDOWN) {
-                switch (e.key.keysym.sym;) {
-                    case SDLK_UP:
-                        return SDLK_UP;
-                    case SDLK_DOWN:
-                        return SDLK_DOWN;
-                    case SDLK_LEFT:
-                        return SDLK_LEFT;
-                    case SDLK_RIGHT:
-                        return SDLK_RIGHT;
-                    case SDLK_RETURN:
-                        return SDLK_RETURN;
-                    case SDLK_ESCAPE:
-                        return SDLK_ESCAPE;
-            } else if (e.type == SDL_CONTROLLERBUTTONDOWN) {
-                switch (e.cbutton.button;) {
-                    case SDL_CONTROLLER_BUTTON_DPAD_UP:
-                        return SDLK_UP;
-                    case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-                        return SDLK_DOWN;
-                    case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-                        return SDLK_LEFT;
-                    case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-                        return SDLK_RIGHT;
-                    case SDL_CONTROLLER_BUTTON_A:
-                    case SDL_CONTROLLER_BUTTON_B:
-                    case SDL_CONTROLLER_BUTTON_START:
-                        return SDLK_RETURN;
-                    case SDL_CONTROLLER_BUTTON_BACK:
-                        return SDLK_ESCAPE;
-                }
+            switch (e.key.keysym.sym;) {
+                case SDLK_UP:
+                    return SDLK_UP;
+                case SDLK_DOWN:
+                    return SDLK_DOWN;
+                case SDLK_LEFT:
+                    return SDLK_LEFT;
+                case SDLK_RIGHT:
+                    return SDLK_RIGHT;
+                case SDLK_RETURN:
+                    return SDLK_RETURN;
+                case SDLK_ESCAPE:
+                    return SDLK_ESCAPE;
+            }
+        } else if (e.type == SDL_CONTROLLERBUTTONDOWN) {
+            switch (e.cbutton.button;) {
+                case SDL_CONTROLLER_BUTTON_DPAD_UP:
+                    return SDLK_UP;
+                case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+                    return SDLK_DOWN;
+                case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+                    return SDLK_LEFT;
+                case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+                    return SDLK_RIGHT;
+                case SDL_CONTROLLER_BUTTON_A:
+                case SDL_CONTROLLER_BUTTON_B:
+                case SDL_CONTROLLER_BUTTON_START:
+                    return SDLK_RETURN;
+                case SDL_CONTROLLER_BUTTON_BACK:
+                    return SDLK_ESCAPE;
             }
         }
     }
