@@ -21,7 +21,7 @@ int handleEvents() {
             quit = true;
             return 1;
         } else if (e.type == SDL_KEYDOWN) {
-            switch (e.key.keysym.sym;) {
+            switch (e.key.keysym.sym) {
                 case SDLK_UP:
                     return SDLK_UP;
                 case SDLK_DOWN:
@@ -36,7 +36,7 @@ int handleEvents() {
                     return SDLK_ESCAPE;
             }
         } else if (e.type == SDL_CONTROLLERBUTTONDOWN) {
-            switch (e.cbutton.button;) {
+            switch (e.cbutton.button) {
                 case SDL_CONTROLLER_BUTTON_DPAD_UP:
                     return SDLK_UP;
                 case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
