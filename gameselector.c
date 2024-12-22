@@ -1,8 +1,8 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #define CONFIG_FILE "gameselector.conf"
 #define IMAGE_DIR "gsimages/"
@@ -21,36 +21,36 @@ int handleEvents() {
             quit = true;
             return 1;
         } else if (e.type == SDL_KEYDOWN) {
-            switch (e.key.keysym.sym) {
-                case SDLK_UP:
-                    return SDLK_UP;
-                case SDLK_DOWN:
-                    return SDLK_DOWN;
-                case SDLK_LEFT:
-                    return SDLK_LEFT;
-                case SDLK_RIGHT:
-                    return SDLK_RIGHT;
-                case SDLK_RETURN:
-                    return SDLK_RETURN;
-                case SDLK_ESCAPE:
-                    return SDLK_ESCAPE;
-            }
-        } else if (e.type == SDL_CONTROLLERBUTTONDOWN) {
-            switch (e.cbutton.button) {
-                case SDL_CONTROLLER_BUTTON_DPAD_UP:
-                    return SDLK_UP;
-                case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-                    return SDLK_DOWN;
-                case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-                    return SDLK_LEFT;
-                case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-                    return SDLK_RIGHT;
-                case SDL_CONTROLLER_BUTTON_A:
-                case SDL_CONTROLLER_BUTTON_B:
-                case SDL_CONTROLLER_BUTTON_START:
-                    return SDLK_RETURN;
-                case SDL_CONTROLLER_BUTTON_BACK:
-                    return SDLK_ESCAPE;
+                switch (e.key.keysym.sym;) {
+                    case SDLK_UP:
+                        return SDLK_UP;
+                    case SDLK_DOWN:
+                        return SDLK_DOWN;
+                    case SDLK_LEFT:
+                        return SDLK_LEFT;
+                    case SDLK_RIGHT:
+                        return SDLK_RIGHT;
+                    case SDLK_RETURN:
+                        return SDLK_RETURN;
+                    case SDLK_ESCAPE:
+                        return SDLK_ESCAPE;
+            } else if (e.type == SDL_CONTROLLERBUTTONDOWN) {
+                switch (e.cbutton.button;) {
+                    case SDL_CONTROLLER_BUTTON_DPAD_UP:
+                        return SDLK_UP;
+                    case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+                        return SDLK_DOWN;
+                    case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+                        return SDLK_LEFT;
+                    case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+                        return SDLK_RIGHT;
+                    case SDL_CONTROLLER_BUTTON_A:
+                    case SDL_CONTROLLER_BUTTON_B:
+                    case SDL_CONTROLLER_BUTTON_START:
+                        return SDLK_RETURN;
+                    case SDL_CONTROLLER_BUTTON_BACK:
+                        return SDLK_ESCAPE;
+                }
             }
         }
     }
@@ -418,7 +418,7 @@ int main() {
     // Initialize SDL
     if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) != 0)
     {
-      fprintf(stderr, "Failed to initialize SDL: %s\n", SDL_GetError());
+      fprintf(stderr, "GameSelector: Failed to initialize SDL: %s\n", SDL_GetError());
       SDL_Quit();
       exit(1);
     }
@@ -433,14 +433,14 @@ int main() {
                                           480, 
                                           SDL_WINDOW_FULLSCREEN_DESKTOP);
     if (window == NULL) {
-        fprintf(stderr, "Failed to create SDL window: %s\n", SDL_GetError());
+        fprintf(stderr, "GameSelector: Failed to create SDL window: %s\n", SDL_GetError());
         SDL_Quit();
         exit(1);
     }
 
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == NULL) {
-        fprintf(stderr, "Failed to create SDL renderer: %s\n", SDL_GetError());
+        fprintf(stderr, "GameSelector: Failed to create SDL renderer: %s\n", SDL_GetError());
         SDL_Quit();
         exit(1);
     }
@@ -452,13 +452,13 @@ int main() {
     // Open the config file
     FILE *configFile = fopen(CONFIG_FILE, "r");
     if (!configFile) {
-        printf("Unable to open config file: %s\n", CONFIG_FILE);
+        printf("GameSelector: Unable to open config file: %s\n", CONFIG_FILE);
         return 1;
     }
 
     int numImages;
     if (fscanf(configFile, "%d", &numImages) != 1) {
-        printf("Error reading number of selection entries from line 1 in gameselector.conf.\n");
+        printf("GameSelector: Error reading number of selection entries from line 1 in gameselector.conf.\n");
         fclose(configFile);
         return 1;
     }
@@ -470,7 +470,7 @@ int main() {
     char **imageCommands = (char **)malloc(numImages * sizeof(char *));
 
     if (!imageNames || !imageCommands) {
-        printf("Error allocating memory.\n");
+        printf("GameSelector: Error allocating memory.\n");
         fclose(configFile);
         return 1;
     }
@@ -486,7 +486,7 @@ int main() {
                 imageNames[i] = strdup(imageName);
                 imageCommands[i] = strdup(command);
             } else {
-                printf("Error: Malformed line in config file: '%s'\n", line);
+                printf("GameSelector error: Malformed line in config file: '%s'\n", line);
                 fclose(configFile);
                 return 1;
             }
@@ -506,7 +506,7 @@ int main() {
             imageTextures[i] = SDL_CreateTextureFromSurface(renderer, imageSurface);
             SDL_FreeSurface(imageSurface);
         } else {
-            printf("Error loading image: %s\n", imagePath);
+            printf("GameSelector: Error loading image: %s\n", imagePath);
             imageTextures[i] = NULL;  // Assign NULL in case of an error
         }
     }
@@ -518,9 +518,9 @@ int main() {
     if (SDL_NumJoysticks() > 0 && SDL_IsGameController(0)) {
         controller = SDL_GameControllerOpen(0);
         if (controller) {
-            printf("Game controller connected: %s\n", SDL_GameControllerName(controller));
+            printf("GameSelector: Game controller connected: %s\n", SDL_GameControllerName(controller));
         } else {
-            printf("Failed to open game controller.\n");
+            printf("GameSelector: Failed to open game controller.\n");
         }
     }
 
@@ -535,11 +535,11 @@ int main() {
                 SDL_Quit();
                 int ret = system(imageCommands[currentIndex]);
                 if (ret == -1) {
-                    printf("Failed to execute command: %s\n", imageCommands[currentIndex]);
+                    printf("GameSelector: Failed to execute command: %s\n", imageCommands[currentIndex]);
                 }
                 exit(0);
             } else {
-                printf("The command or file does not exist.\n");
+                printf("GameSelector: The command or file does not exist.\n");
             }
             break;
         }
